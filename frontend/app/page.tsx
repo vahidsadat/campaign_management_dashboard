@@ -41,9 +41,13 @@ export default function CampaignPage(){
   const [editingId, setEditingId] = useState<string | null>(null);
   const [clientStats, setClientStats] = useState<ClientStats[]>([]);
 
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+
   useEffect(() => {
   const fetchStats = async () => {
-    const res = await fetch("http://localhost:5000/campaigns/stats");
+    const res = await fetch(`${API_URL}/campaigns/stats`);
     const data = await res.json();
     setClientStats(data);
   };
@@ -54,12 +58,12 @@ export default function CampaignPage(){
   };
   const deleteCampaign = async (id:string) => {
     if(!confirm("Are you sure?")) return;
-    await fetch(`http://localhost:5000/campaigns/${id}`, {method:'DELETE'});
+    await fetch(`${API_URL}/campaigns/${id}`, {method:'DELETE'});
     setCampaigns(prev=>prev.filter(c=>c.id !== id));
   }
   const updateCampaign = async (id: string, updatedFields : Partial<Campaign>) => {
     try {
-      const responce = await fetch(`http://localhost:5000/campaigns/${id}`,{
+      const responce = await fetch(`${API_URL}/campaigns/${id}`,{
         method : "PATCH",
         headers : { "Content-Type": "application/json" },
         body: JSON.stringify(updatedFields),
@@ -78,7 +82,7 @@ export default function CampaignPage(){
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        const responce = await fetch("http://localhost:5000/campaigns");
+        const responce = await fetch(`${API_URL}/campaigns`);
         const data = await responce.json();
         console.log("Frontend received:", data);
         setCampaigns(data);
@@ -91,10 +95,24 @@ export default function CampaignPage(){
     fetchCampaigns();
   }, []);
   useEffect (() => {
-    fetch("http://localhost:5000/campaigns/stats")
+    fetch(`${API_URL}/campaigns/stats`)
     .then(res => res.json())
     .then(data => setStats(data))
   })
+  const resetCampaign = async () => {
+    if (window.confirm("This will delete all changes and reset to seed data. Countinue?")){
+      try {
+          const response = await fetch(`${API_URL}/campaigns/reset`, {
+            method: 'POST',
+          });
+          if(response.ok) {
+            window.location.reload();
+          }
+      } catch (error) {
+        console.error ("Reset failed: ", error);
+      }
+    }
+  };
     const filteredCampaigns = campaigns.filter((c) => {
     
           const matchesSearch = c.campaign_name.toLowerCase().includes(filters.search.toLowerCase());
@@ -219,6 +237,13 @@ export default function CampaignPage(){
           >
             RESET FILTERS
           </button>
+          
+            <button 
+          onClick={resetCampaign}
+          className="text-[12px] font-bold text-red-500 hover:text-red-700 uppercase tracking-wider mr-auto"
+        >
+          Reset Database
+        </button>
         </div>
       </div>
 
@@ -243,11 +268,15 @@ export default function CampaignPage(){
                   <tr key={`${c.id}-${index}`} className="hover:bg-blue-50/30 transition-colors group">
                   {/* Media */}
                   <td className="p-4">
+                  {c.thumbnail ? (
                     <img 
-                      src={`http://localhost:5000/images/${c.thumbnail}`} 
+                      src={`${API_URL}/images/${c.thumbnail}`} 
                       className="w-10 h-10 rounded-lg object-cover border border-gray-200 shadow-sm"
-                      onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/40"; }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
+                    ) : (
+                    <span className="text-[10px] text-gray-400 font-bold">N/A</span>
+                  )}
                   </td>
 
                   {/* Editable Name */}
