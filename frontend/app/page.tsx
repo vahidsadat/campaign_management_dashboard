@@ -28,9 +28,9 @@ const INITIAL_FILTERS: FilterState = {
 };
 
 interface ClientStats {
-  _id: string; //Client name
+  client: string; //Client name
   total_budget: number | string;
-  avg_bid: number | string;
+  average_bid: number | string;
   count: number;
 }
 export default function CampaignPage(){
@@ -117,29 +117,31 @@ export default function CampaignPage(){
       <div className="mb-8">
   <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Client Performance Summary</h2>
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {clientStats.map((stat) => (
-      <div key={stat._id} className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col gap-2">
-        <div className="flex justify-between items-center">
-          <span className="font-bold text-gray-800">{stat._id}</span>
-          <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">
-            {stat.count} Campaigns
-          </span>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-4 mt-2">
-          <div>
-            <p className="text-[10px] text-gray-400 uppercase font-bold">Total Budget</p>
-            <p className="text-lg font-black text-gray-700">${stat.total_budget.toLocaleString()}</p>
-          </div>
-          <div>
-            <p className="text-[10px] text-gray-400 uppercase font-bold">Avg Bid</p>
-            <p className="text-lg font-black text-blue-600">
-              ${Number(stat.avg_bid || 0).toFixed(2)}
-            </p>
-          </div>
-        </div>
+    {clientStats.map((stat, index) => (
+  <div key={stat.client || index} className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col gap-2">
+    <div className="flex justify-between items-center">
+      {/* 1. THIS IS THE FIX: Use stat.client to show the Client Name */}
+      <span className="font-bold text-gray-800 truncate pr-2">
+        {stat.client && stat.client !== "null" ? stat.client : "General Client"}
+      </span>
+      
+      <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">
+        {stat.count} Campaigns
+      </span>
+    </div>
+    
+    <div className="grid grid-cols-2 gap-4 mt-2">
+      <div>
+        <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Total Budget</p>
+        <p className="text-sm font-black text-gray-700">${Number(stat.total_budget).toLocaleString()}</p>
       </div>
-    ))}
+      <div>
+        <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Avg Bid</p>
+        <p className="text-sm font-black text-blue-600">${Number(stat.average_bid).toFixed(2)}</p>
+      </div>
+    </div>
+  </div>
+))}
   </div>
 </div>
       {/* 1. STATS SECTION */}
@@ -237,8 +239,8 @@ export default function CampaignPage(){
           </thead>
           <tbody className="divide-y divide-gray-100">
             {filteredCampaigns.length > 0 ? (
-              filteredCampaigns.map((c) => (
-                <tr key={c.id} className="hover:bg-blue-50/30 transition-colors group">
+              filteredCampaigns.map((c, index) => (
+                  <tr key={`${c.id}-${index}`} className="hover:bg-blue-50/30 transition-colors group">
                   {/* Media */}
                   <td className="p-4">
                     <img 
