@@ -6,13 +6,27 @@
     "configurations": [
     
         {
-            "name": "Python Backend run",
+            "name": "Python Backend",
             "type": "debugpy",
             "request": "launch",
             "module": "main",
             "cwd": "${workspaceFolder}/backend",
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+        "name": "Next.js Frontend",
+        "type": "node-terminal",
+        "request": "launch",
+        "command": "npm run dev",
+        "cwd": "${workspaceFolder}/frontend"
         }
-    ]
+    ],
+  "compounds": [
+    {
+      "name": "Full Stack (Backend + Frontend)",
+      "configurations": ["Python Backend", "Next.js Frontend"],
+      "stopAll": true
+    }
+]
 }

@@ -1,5 +1,9 @@
 import uvicorn
+import os
 from fastapi import FastAPI
+from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from model import CampaignModel,CampaignModelUpdate
 from fastapi import HTTPException
 from __init__ import __version__
@@ -8,8 +12,16 @@ from database import database,campaign
 
 app = FastAPI(title="Campaign Management API",
     version=__version__)
-
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"], # Your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows GET, POST, DELETE, etc.
+    allow_headers=["*"],  # Allows all headers
+)
+script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+photos_path = os.path.join(script_dir, "thumbnails")
+app.mount("/images", StaticFiles(directory=photos_path), name="images")
 @app.post("/campaigns/reset")
 async def reset_database():
 
@@ -39,13 +51,12 @@ async def create_campaign(campaign: CampaignModel):
 
 @app.get('/campaigns')
 async def get_all_campaigns():
-    campaigns = []
-    cursor = database.campaigns.find({}, {"_id":0})
-
-    async for camp in cursor:
-        campaigns.append(camp)
-
-    return campaigns
+    campaigns = await database["campaigns"].find({}, {"_id": 0}).to_list(length=None)
+    
+    print(f"DEBUG: Found {len(campaigns)} campaigns") 
+    
+    # Use the encoder to ensure everything is "JSON-ready"
+    return jsonable_encoder(campaigns)
 
 
 @app.get('/campaigns/stats')
