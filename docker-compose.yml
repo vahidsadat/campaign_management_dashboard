@@ -1,22 +1,22 @@
-version: '3.8'
-
 services:
   backend:
     build: ./backend
     ports:
-      -"5000:5000"
+      - "5000:5000"
     environment:
-      - MONGO_USER=${MONGO_USER}
+      - MONGODB_USER=${MONGODB_USER}
       - MONGODB_PASSWORD=${MONGODB_PASSWORD}
-      - MONGO_CLUSTER=${MONGO_CLUSTER}
+      - MONGODB_CLUSTER=${MONGODB_CLUSTER}
     volumes:
-      - ./thumbnails:/app/thumbnails:ro
+      - ./thumbnails:/thumbnails
   
   frontend:
     build: ./frontend
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_API_URL= http://localhost:5000
+      - NEXT_TELEMETRY_DISABLED=1
+      - WATCHPACK_POLLING=true
     depends_on:
       - backend

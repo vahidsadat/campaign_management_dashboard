@@ -138,7 +138,6 @@ export default function CampaignPage(){
     {clientStats.map((stat, index) => (
   <div key={stat.client || index} className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col gap-2">
     <div className="flex justify-between items-center">
-      {/* 1. THIS IS THE FIX: Use stat.client to show the Client Name */}
       <span className="font-bold text-gray-800 truncate pr-2">
         {stat.client && stat.client !== "null" ? stat.client : "General Client"}
       </span>
@@ -162,7 +161,7 @@ export default function CampaignPage(){
 ))}
   </div>
 </div>
-      {/* 1. STATS SECTION */}
+      {/* stats*/}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Campaigns</p>
@@ -182,7 +181,7 @@ export default function CampaignPage(){
         </div>
       </div>
 
-      {/* 2. HEADER & CREATE ACTION */}
+      {/* header and create */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Campaign Management</h1>
         <button 
@@ -193,7 +192,7 @@ export default function CampaignPage(){
         </button>
       </div>
 
-      {/* 3. FILTER BAR */}
+      {/* filter */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div>
@@ -247,7 +246,7 @@ export default function CampaignPage(){
         </div>
       </div>
 
-      {/* 4. MAIN TABLE */}
+      {/* main table */}
       <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -326,7 +325,7 @@ export default function CampaignPage(){
                     )}
                   </td>
 
-                  {/* OS / Platform */}
+                  {/* Platform */}
                   <td className="p-4 text-center">
                   <button 
                     onClick={() => updateCampaign(c.id, { 

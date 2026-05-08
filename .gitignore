@@ -1,8 +1,8 @@
-.env
-
-
 node_modules/
-
-__pycache__/
-
 .next/
+.env
+__pycache__/
+*.pyc
+.DS_Store
+dist/
+build/
