@@ -5,23 +5,35 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from model import CampaignModel,CampaignModelUpdate
+from contextlib import asynccontextmanager
 from fastapi import HTTPException
 from __init__ import __version__
 from database import database,campaign
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    count = database.campaigns.count_documents({})
+    if count == 0:
+        print("Add campaigns information into database for the first time..")
+        await database.campaigns.insert_many(campaign)
+    
+    yield
+
 app = FastAPI(title="Campaign Management API",
-    version=__version__)
+    version=__version__,
+    lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], # Your frontend URL
+    allow_origins=["http://localhost:3000"], 
     allow_credentials=True,
-    allow_methods=["*"],  # Allows GET, POST, DELETE, etc.
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 photos_path = os.path.join(script_dir, "thumbnails")
 app.mount("/images", StaticFiles(directory=photos_path), name="images")
+
 @app.post("/campaigns/reset")
 async def reset_database():
 

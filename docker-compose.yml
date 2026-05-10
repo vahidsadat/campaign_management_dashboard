@@ -1,12 +1,12 @@
 services:
   backend:
     build: ./backend
+    env_file:
+      - .env
     ports:
       - "5000:5000"
     environment:
-      - MONGODB_USER=${MONGODB_USER}
-      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
-      - MONGODB_CLUSTER=${MONGODB_CLUSTER}
+      - MONGODB_URI =${MONGODB_URI}
     volumes:
       - ./thumbnails:/thumbnails
   
